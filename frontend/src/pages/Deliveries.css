@@ -1,0 +1,147 @@
+.delivery-dashboard {
+  padding: 2rem;
+  background: #f7f7f9;
+  min-height: 100vh;
+}
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 2rem;
+}
+.dashboard-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.pending-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.map-placeholder {
+  background: #ececec;
+  height: 120px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #aaa;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+th, td {
+  padding: 0.5rem;
+  text-align: left;
+}
+.delivered-status {
+  background: #e0ffe0;
+  color: #2e7d32;
+  padding: 0.2rem 0.7rem;
+  border-radius: 8px;
+  font-weight: bold;
+}
+.error-message {
+  background: #ffe0e0;
+  color: #b71c1c;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  border: 1px solid #ffbdbd;
+}
+
+.search-bar {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+.search-bar input {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  width: 320px;
+  max-width: 100%;
+}
+
+.order-details {
+  color: #555;
+  font-size: 0.95em;
+  margin-left: 0.5rem;
+}
+
+.pending-order-details {
+  background: #f3f7ff;
+  border: 1px solid #b3c6e6;
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.98em;
+}
+.pending-order-label {
+  font-weight: bold;
+  color: #1976d2;
+  margin-bottom: 0.3rem;
+}
+.order-status-badge {
+  display: inline-block;
+  padding: 0.15em 0.7em;
+  border-radius: 8px;
+  font-size: 0.95em;
+  font-weight: 600;
+  margin-left: 0.3em;
+}
+.order-status-badge.pending {
+  background: #fff8e1;
+  color: #b28704;
+  border: 1px solid #ffe082;
+}
+.order-status-badge.delivered {
+  background: #e0ffe0;
+  color: #2e7d32;
+  border: 1px solid #b2ffb2;
+}
+.order-status-badge.cancelled {
+  background: #ffe0e0;
+  color: #b71c1c;
+  border: 1px solid #ffbdbd;
+} 
+
+/* Ensure custom marker icon is visible and not overridden by Leaflet defaults */
+.leaflet-marker-icon.custom-marker {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.custom-marker div {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  transition: background 0.5s;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.custom-marker.pending div { background: #ffd600; }
+.custom-marker.shipped div { background: #29b6f6; }
+.custom-marker.delivered div { background: #43a047; }
+.custom-marker.cancelled div { background: #ef5350; }
+
+.custom-marker.animate div {
+  animation: marker-pulse 1s;
+}
+
+@keyframes marker-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(67,160,71,0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(67,160,71,0); }
+  100% { box-shadow: 0 0 0 0 rgba(67,160,71,0); }
+} 
