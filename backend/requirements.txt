@@ -1,5 +1,6 @@
 fastapi
 uvicorn
+tensorflow==2.10.0
 gunicorn
 sqlalchemy
 pydantic
@@ -17,8 +18,6 @@ passlib
 python-jose
 scikit-learn
 xgboost
-tensorflow
-torch
 pandas
 numpy
 mlflow
