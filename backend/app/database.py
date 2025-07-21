@@ -1,4 +1,14 @@
+from dotenv import load_dotenv
 import os
+
+# Load variables from .env file
+load_dotenv()
+
+# Access your variables
+OMNIDIMENSION_API_KEY = os.getenv("OMNIDIMENSION_API_KEY")
+OMNIDIMENSION_AGENT_ID = os.getenv("OMNIDIMENSION_AGENT_ID")
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 APP_DIR = os.path.dirname(os.path.abspath(__file__))  # backend/app/
 BACKEND_DIR = os.path.dirname(APP_DIR)                # backend/
