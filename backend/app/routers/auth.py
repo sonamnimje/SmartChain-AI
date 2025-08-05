@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
+import secrets
 from .. import models, schemas, crud
 from ..database import SessionLocal
 
@@ -99,9 +100,43 @@ def update_profile(
         db.refresh(current_user)
     return current_user
 
-@router.post("/forgot-password")
-def forgot_password():
-    return {"message": "Forgot password endpoint (to be implemented)"}
+@router.post("/forgot-password", response_model=schemas.PasswordResetResponse)
+def forgot_password(request: schemas.ForgotPasswordRequest, db: Session = Depends(get_db)):
+    # Check if user exists
+    user = crud.get_user_by_email(db, request.email)
+    if not user:
+        # Don't reveal if email exists or not for security
+        return {"message": "If the email exists, a password reset link has been sent."}
+    
+    # Generate a secure token
+    token = secrets.token_urlsafe(32)
+    expires_at = datetime.utcnow() + timedelta(hours=1)  # Token expires in 1 hour
+    
+    # Store the token in database
+    crud.create_password_reset_token(db, request.email, token, expires_at)
+    
+    # In a real application, you would send an email here
+    # For now, we'll just return the token (in production, this should be sent via email)
+    reset_url = f"/reset-password?token={token}"
+    
+    return {"message": f"Password reset link generated successfully. The reset page will open automatically in a new tab. Reset URL: {reset_url}"}
+
+@router.post("/reset-password", response_model=schemas.PasswordResetResponse)
+def reset_password(request: schemas.ResetPasswordRequest, db: Session = Depends(get_db)):
+    # Validate the token
+    token_record = crud.get_password_reset_token(db, request.token)
+    if not token_record:
+        raise HTTPException(status_code=400, detail="Invalid or expired token")
+    
+    # Update the user's password
+    user = crud.update_user_password(db, token_record.email, request.new_password)
+    if not user:
+        raise HTTPException(status_code=400, detail="User not found")
+    
+    # Mark token as used
+    crud.mark_token_as_used(db, request.token)
+    
+    return {"message": "Password has been reset successfully"}
 
 # Utility for role-based access
 def require_role(current_user, allowed_roles):

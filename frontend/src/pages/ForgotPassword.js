@@ -27,8 +27,28 @@ function ForgotPassword() {
     onSubmit: async (values) => {
       setLoading(true);
       try {
-        await api.post('/auth/forgot-password', { email: values.email });
-        enqueueSnackbar('Password reset instructions sent!', { variant: 'success' });
+        const response = await api.post('/auth/forgot-password', { email: values.email });
+        enqueueSnackbar('Password reset link generated successfully!', { variant: 'success' });
+        
+        // Extract the reset URL from the response
+        const message = response.data.message;
+        const resetUrlMatch = message.match(/\/reset-password\?token=[^"]+/);
+        if (resetUrlMatch) {
+          const resetUrl = `${window.location.origin}${resetUrlMatch[0]}`;
+          
+          // Automatically open the reset link in a new tab
+          window.open(resetUrl, '_blank');
+          enqueueSnackbar('Reset link opened in new tab!', { variant: 'info' });
+          
+          // Also copy to clipboard as backup
+          try {
+            await navigator.clipboard.writeText(resetUrl);
+            enqueueSnackbar('Reset link also copied to clipboard!', { variant: 'info' });
+          } catch (clipboardError) {
+            console.log('Clipboard copy failed:', clipboardError);
+          }
+        }
+        
         formik.resetForm();
       } catch (err) {
         enqueueSnackbar(
@@ -46,6 +66,9 @@ function ForgotPassword() {
       <Container maxWidth="xs" sx={{ textAlign: 'center', p: 4, borderRadius: 3, boxShadow: 3, bgcolor: 'rgba(24,24,24,0.7)', border: '2px solid #fff', color: '#fff' }}>
         <Typography variant="h4" sx={{ fontWeight: 700, mb: 2, color: 'primary.main' }}>
           Forgot Password
+        </Typography>
+        <Typography variant="body2" sx={{ mb: 3, color: 'rgba(255,255,255,0.8)' }}>
+          Enter your email address below. A password reset link will be generated and opened automatically in a new tab.
         </Typography>
         <form onSubmit={formik.handleSubmit}>
             <TextField

@@ -15,6 +15,14 @@ class User(Base):
     username = Column(String, unique=True, index=True, nullable=False, default="")
     location = Column(String, nullable=False, default="")
 
+class PasswordResetToken(Base):
+    __tablename__ = "password_reset_tokens"
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, nullable=False)
+    token = Column(String, unique=True, index=True, nullable=False)
+    expires_at = Column(DateTime, nullable=False)
+    used = Column(Boolean, default=False)
+
 class Inventory(Base):
     __tablename__ = "inventory"
     id = Column(Integer, primary_key=True, index=True)

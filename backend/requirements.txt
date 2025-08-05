@@ -1,6 +1,5 @@
 fastapi
 uvicorn
-tensorflow==2.10.0
 gunicorn
 sqlalchemy
 pydantic
@@ -22,7 +21,8 @@ pandas
 numpy
 mlflow
 # hyperledger-fabric-sdk-py
-streamlit 
-transformers 
-reportlab 
-openai 
+streamlit
+transformers
+reportlab
+openai
+tensorflow==2.15.0

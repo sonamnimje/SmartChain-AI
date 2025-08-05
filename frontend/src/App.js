@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import InventoryList from './components/InventoryList';
 import ProductForm from './components/ProductForm';
 import BatchUpload from './components/BatchUpload';
@@ -481,9 +482,6 @@ function AppContent({ mode, toggleMode }) {
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard profile={profile} />} path="/dashboard" profile={profile} />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/inventory" element={<ProtectedRoute element={<InventoryList />} path="/inventory" profile={profile} />} />
             <Route path="/inventory/add" element={<ProtectedRoute element={<ProductForm />} path="/inventory" profile={profile} />} />
             <Route path="/inventory/batch-upload" element={<ProtectedRoute element={<BatchUpload />} path="/inventory" profile={profile} />} />
@@ -530,7 +528,16 @@ function App() {
       <CssBaseline />
       <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
         <Router>
-          <AppContent mode={mode} toggleMode={toggleMode} />
+          <Routes>
+            {/* Full screen routes (no sidebar) */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            
+            {/* Main app with sidebar */}
+            <Route path="/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
+          </Routes>
         </Router>
       </SnackbarProvider>
     </ThemeProvider>
