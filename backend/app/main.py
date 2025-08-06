@@ -23,7 +23,8 @@ app.add_middleware(
         "http://localhost:3000",
         "http://localhost:3001", 
         "https://smartchain-ai-frontend.onrender.com",
-        "https://smartchain-ai-frontend-imvu.onrender.com"
+        "https://smartchain-ai-frontend-imvu.onrender.com",
+        "https://smart-chain-ai-fkeg.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
