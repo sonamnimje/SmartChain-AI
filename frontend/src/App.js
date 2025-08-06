@@ -89,6 +89,7 @@ import { SnackbarProvider, useSnackbar } from 'notistack';
 import Badge from '@mui/material/Badge';
 import Popover from '@mui/material/Popover';
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 import api from './api';
 import PersonIcon from '@mui/icons-material/Person';
 import { fetchProfile } from './api';
@@ -223,7 +224,22 @@ const loadChatbotWidget = () => {
 
 // ProtectedRoute wrapper
 function ProtectedRoute({ element, path, profile }) {
-  if (!profile) return null; // or a loading spinner
+  const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+  
+  // If no token, redirect to login
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  // If profile is still loading, show loading spinner
+  if (!profile) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+  
   const allowedRoles = routeRoleMap[path] || [];
   if (allowedRoles.includes('*') || allowedRoles.includes(profile.role?.toLowerCase()) || ['admin','manager'].includes(profile.role?.toLowerCase())) {
     return element;
@@ -266,9 +282,9 @@ function AppContent({ mode, toggleMode }) {
     setChatMessages([...chatMessages, { user: userMessage, ai: 'typing...' }]);
     setChatInput('');
     try {
-      const token = localStorage.getItem('access');
+      const token = localStorage.getItem('token') || localStorage.getItem('access_token');
       // Call your backend endpoint that uses Omnidimenion for chat
-      const res = await fetch('http://localhost:8000/ai/omnidimenion-chat', {
+      const res = await fetch(`${process.env.REACT_APP_API_URL || 'https://smartchain-ai-backend-imvu.onrender.com'}/ai/omnidimenion-chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -340,7 +356,7 @@ function AppContent({ mode, toggleMode }) {
   useEffect(() => {
     if (searchValue.length > 1) {
       // Example: fetch from /search?q=searchValue
-      fetch(`http://localhost:8000/search?q=${encodeURIComponent(searchValue)}`)
+      fetch(`${process.env.REACT_APP_API_URL || 'https://smartchain-ai-backend-imvu.onrender.com'}/search?q=${encodeURIComponent(searchValue)}`)
         .then(res => res.json())
         .then(data => setSearchOptions(data))
         .catch(() => setSearchOptions([]));
@@ -554,6 +570,22 @@ function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             
             {/* Main app with sidebar */}
+            <Route path="/dashboard" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
+            <Route path="/inventory/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
+            <Route path="/warehouses/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
+            <Route path="/orders/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
+            <Route path="/shipments/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
+            <Route path="/vendor-orders/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
+            <Route path="/vendor-proof/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
+            <Route path="/deliveries/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
+            <Route path="/reports/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
+            <Route path="/returns/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
+            <Route path="/ai/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
+            <Route path="/settings/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
+            <Route path="/profile/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
+            <Route path="/users/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
+            
+            {/* Catch-all route for authenticated pages */}
             <Route path="/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
           </Routes>
         </Router>

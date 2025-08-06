@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Get API URL from environment variable or use default
-const API_URL = process.env.REACT_APP_API_URL || 'https://smartchain-ai-backend-imvu.onrender.com/g';
+const API_URL = process.env.REACT_APP_API_URL || 'https://smartchain-ai-backend-imvu.onrender.com';
 
 const api = axios.create({
   baseURL: API_URL,
@@ -13,7 +13,7 @@ const api = axios.create({
 // Add request interceptor to include auth token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token') || localStorage.getItem('access_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -30,6 +30,7 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
+      localStorage.removeItem('access_token');
       window.location.href = '/login';
     }
     return Promise.reject(error);
@@ -39,10 +40,12 @@ api.interceptors.response.use(
 // Helper to set token after login
 export function setAuthToken(token) {
   localStorage.setItem('token', token);
+  localStorage.setItem('access_token', token);
 }
 
 export function logout() {
   localStorage.removeItem('token');
+  localStorage.removeItem('access_token');
 }
 
 export async function updateProfile(data) {
