@@ -44,15 +44,6 @@ Retailers face challenges with overstocking, stockouts, and inefficient deliveri
 - System configuration and security settings
 
 ---
-
-## 🎨 Color Palette
-- **Eco Green** (#4CAF50) – Primary color
-- **Soft Blue** (#5BC0EB) – Accent color
-- **Neutral Base** (#F5F5F5) – Backgrounds
-- **Charcoal/Dark Gray** (#333333) – Text and icons
-
----
-
 ## 🚀 Tech Stack
 
 ### Frontend
