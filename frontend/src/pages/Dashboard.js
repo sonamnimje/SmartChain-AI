@@ -52,26 +52,44 @@ const salesData = [
 ];
 
 export default function Dashboard({ profile }) {
-  const [recentOrders, setRecentOrders] = useState([]);
-  const [kpis, setKpis] = useState({ total_inventory: 0, total_orders: 0, total_shipments: 0 });
-  const [alertsCount, setAlertsCount] = useState(0);
-  const [loadingKPIs, setLoadingKPIs] = useState(true);
+  const [recentOrders, setRecentOrders] = useState([
+    { id: 1, product: "Rice - Basmati", customer_name: "John Doe", quantity: 5, status: "pending" },
+    { id: 2, product: "Wheat Flour", customer_name: "Jane Smith", quantity: 3, status: "completed" },
+    { id: 3, product: "Pulses - Toor Dal", customer_name: "Bob Johnson", quantity: 2, status: "shipped" }
+  ]);
+  const [kpis, setKpis] = useState({ total_inventory: 150, total_orders: 25, total_shipments: 18 });
+  const [alertsCount, setAlertsCount] = useState(3);
+  const [loadingKPIs, setLoadingKPIs] = useState(false);
 
   useEffect(() => {
+    // Try to fetch orders, but don't fail if it doesn't work
     api.get('/orders').then(res => {
       setRecentOrders(Array.isArray(res.data) ? res.data.slice(-5).reverse() : []);
+    }).catch(err => {
+      console.log('Orders fetch failed:', err);
+      setRecentOrders([]);
     });
   }, []);
 
   useEffect(() => {
     setLoadingKPIs(true);
+    // Try to fetch KPIs, but don't fail if it doesn't work
     fetchDashboardKPIs().then(data => {
       setKpis(data);
       setLoadingKPIs(false);
+    }).catch(err => {
+      console.log('KPIs fetch failed:', err);
+      setKpis({ total_inventory: 0, total_orders: 0, total_shipments: 0 });
+      setLoadingKPIs(false);
     });
+    
+    // Try to fetch alerts, but don't fail if it doesn't work
     api.get('/alerts').then(res => {
       const alerts = Array.isArray(res.data) ? res.data : [];
       setAlertsCount(alerts.filter(a => !a.read).length);
+    }).catch(err => {
+      console.log('Alerts fetch failed:', err);
+      setAlertsCount(0);
     });
   }, []);
 
@@ -88,6 +106,53 @@ export default function Dashboard({ profile }) {
       </Box>
       {/* Quick Actions */}
       <DashboardQuickActions profile={profile} />
+      
+      {/* KPI Cards */}
+      <Container maxWidth="lg" sx={{ mt: 3, mb: 4 }}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Paper sx={{ p: 3, textAlign: 'center', borderRadius: 3, bgcolor: '#e8f5e8' }}>
+              <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#2e7d32' }}>
+                {kpis.total_inventory}
+              </Typography>
+              <Typography variant="body1" sx={{ color: '#666' }}>
+                Total Inventory
+              </Typography>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Paper sx={{ p: 3, textAlign: 'center', borderRadius: 3, bgcolor: '#e3f2fd' }}>
+              <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+                {kpis.total_orders}
+              </Typography>
+              <Typography variant="body1" sx={{ color: '#666' }}>
+                Total Orders
+              </Typography>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Paper sx={{ p: 3, textAlign: 'center', borderRadius: 3, bgcolor: '#fff3e0' }}>
+              <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#f57c00' }}>
+                {kpis.total_shipments}
+              </Typography>
+              <Typography variant="body1" sx={{ color: '#666' }}>
+                Total Shipments
+              </Typography>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Paper sx={{ p: 3, textAlign: 'center', borderRadius: 3, bgcolor: '#fce4ec' }}>
+              <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#c2185b' }}>
+                {alertsCount}
+              </Typography>
+              <Typography variant="body1" sx={{ color: '#666' }}>
+                Active Alerts
+              </Typography>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Container>
+      
       {/* Main Content */}
       <Container maxWidth="lg" sx={{ mt: 2, mb: 0, p: 0, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {/* Four Main Cards Row */}
