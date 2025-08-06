@@ -1,28 +1,48 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://127.0.0.1:8000'; // Update if backend runs elsewhere
+// Get API URL from environment variable or use default
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
-  // Do NOT set default Content-Type here; let Axios/browser handle it per request
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-// Attach JWT token to all requests if present
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('access'); // Changed from 'token' to 'access'
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+// Add request interceptor to include auth token
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-  return config;
-});
+);
+
+// Add response interceptor to handle errors
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
 
 // Helper to set token after login
 export function setAuthToken(token) {
-  localStorage.setItem('access', token); // Changed from 'token' to 'access'
+  localStorage.setItem('token', token);
 }
 
 export function logout() {
-  localStorage.removeItem('access'); // Changed from 'token' to 'access'
+  localStorage.removeItem('token');
 }
 
 export async function updateProfile(data) {
@@ -101,7 +121,7 @@ export async function fetchDeliveryHistoryWithOrders() {
 }
 
 export async function placeOrder(payload) {
-  console.log('Placing order to:', API_BASE_URL + '/orders/add', payload);
+  console.log('Placing order to:', API_URL + '/orders/add', payload);
   return api.post('/orders/add/', payload);
 }
 

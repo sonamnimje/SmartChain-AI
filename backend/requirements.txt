@@ -26,3 +26,5 @@ transformers
 reportlab
 openai
 tensorflow==2.15.0
+apscheduler
+omnidimension

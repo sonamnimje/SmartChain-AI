@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
+from datetime import datetime
 from .database import engine, SessionLocal, get_db
 from . import models
 from .models import User, Inventory, Order, Delivery
@@ -28,7 +29,11 @@ app.add_middleware(
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to SmartChain AI API"}
+    return {"message": "Welcome to SmartChain AI API", "status": "healthy"}
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
 
 @app.get("/dashboard")
 def get_dashboard_metrics(db: Session = Depends(get_db)):
