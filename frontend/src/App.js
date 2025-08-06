@@ -207,6 +207,20 @@ const routeRoleMap = {
   '/profile': ['*'], // All users
 };
 
+// Function to load chatbot widget conditionally
+const loadChatbotWidget = () => {
+  // Check if widget is already loaded
+  if (document.getElementById('omnidimension-web-widget')) {
+    return;
+  }
+  
+  const script = document.createElement('script');
+  script.id = 'omnidimension-web-widget';
+  script.async = true;
+  script.src = 'https://backend.omnidim.io/web_widget.js?secret_key=13161e38ecbbfb4ef740509c34cc826a';
+  document.body.appendChild(script);
+};
+
 // ProtectedRoute wrapper
 function ProtectedRoute({ element, path, profile }) {
   if (!profile) return null; // or a loading spinner
@@ -302,6 +316,10 @@ function AppContent({ mode, toggleMode }) {
       try {
         const res = await fetchProfile();
         setProfile(res.data);
+        // Load chatbot widget only when user is authenticated
+        if (res.data) {
+          loadChatbotWidget();
+        }
       } catch (err) {
         setProfile(null);
       }
