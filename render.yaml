@@ -22,7 +22,6 @@ services:
   - type: web
     name: smartchain-ai-frontend
     env: static
-    plan: free
     buildCommand: npm install && npm run build
     staticPublishPath: ./build
     envVars:
