@@ -39,6 +39,7 @@ import RouteNavigation from './components/RouteNavigation';
 import Profile from './pages/Profile';
 import Landing from './pages/Landing';
 import UserManagementPage from './pages/UserManagementPage';
+import NotFound from './components/NotFound';
 
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -373,6 +374,11 @@ function AppContent({ mode, toggleMode }) {
     if (location.pathname === '/signup') return <Signup />;
     if (location.pathname === '/forgot-password') return <ForgotPassword />;
   }
+  
+  // Redirect root to dashboard if authenticated
+  if (location.pathname === '/' && profile) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -544,6 +550,7 @@ function AppContent({ mode, toggleMode }) {
             <Route path="/route-navigation" element={<ProtectedRoute element={<RouteNavigation />} path="/deliveries" profile={profile} />} />
             <Route path="/profile" element={<ProtectedRoute element={<Profile />} path="/profile" profile={profile} />} />
             <Route path="/users" element={<ProtectedRoute element={<UserManagementPage />} path="/users" profile={profile} />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Container>
       </Box>
@@ -569,23 +576,7 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             
-            {/* Main app with sidebar */}
-            <Route path="/dashboard" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
-            <Route path="/inventory/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
-            <Route path="/warehouses/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
-            <Route path="/orders/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
-            <Route path="/shipments/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
-            <Route path="/vendor-orders/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
-            <Route path="/vendor-proof/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
-            <Route path="/deliveries/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
-            <Route path="/reports/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
-            <Route path="/returns/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
-            <Route path="/ai/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
-            <Route path="/settings/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
-            <Route path="/profile/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
-            <Route path="/users/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
-            
-            {/* Catch-all route for authenticated pages */}
+            {/* Main app with sidebar - use a single catch-all route */}
             <Route path="/*" element={<AppContent mode={mode} toggleMode={toggleMode} />} />
           </Routes>
         </Router>
