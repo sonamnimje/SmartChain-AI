@@ -119,66 +119,10 @@ const navItems = [
   { text: 'Profile', icon: <PersonIcon />, path: '/profile' },
 ];
 
-// Role-based menu mapping
-const roleMenuMap = {
-  'admin': [
-    'Dashboard', 'Inventory', 'Warehouses', 'Orders', 'Shipments', 'Vendor Orders', 'Vendor Proof', 'Deliveries', 'Reports', 'AI Insights', 'Profile'
-  ],
-  'manager': [
-    'Dashboard', 'Inventory', 'Warehouses', 'Orders', 'Shipments', 'Vendor Orders', 'Vendor Proof', 'Deliveries', 'Reports', 'AI Insights', 'Profile'
-  ],
-  'executive': [
-    'Dashboard', 'Reports', 'AI Insights', 'Profile'
-  ],
-  'inventory_manager': [
-    'Inventory', 'Warehouses', 'Profile'
-  ],
-  'storekeeper': [
-    'Inventory', 'Warehouses', 'Profile'
-  ],
-  'logistics_manager': [
-    'Warehouses', 'Shipments', 'Deliveries', 'Profile'
-  ],
-  'warehouse_admin': [
-    'Warehouses', 'Shipments', 'Deliveries', 'Profile'
-  ],
-  'sales_staff': [
-    'Orders', 'Profile'
-  ],
-  'order_manager': [
-    'Orders', 'Profile'
-  ],
-  'shipping_team': [
-    'Shipments', 'Profile'
-  ],
-  'delivery_manager': [
-    'Deliveries', 'Profile'
-  ],
-  'logistics_staff': [
-    'Deliveries', 'Profile'
-  ],
-  'procurement_officer': [
-    'Vendor Orders', 'Vendor Proof', 'Profile'
-  ],
-  'purchase_dept': [
-    'Vendor Orders', 'Vendor Proof', 'Profile'
-  ],
-  'compliance_team': [
-    'Vendor Proof', 'Profile'
-  ],
-  'analyst': [
-    'Reports', 'AI Insights', 'Profile'
-  ],
-  'data_analyst': [
-    'AI Insights', 'Profile'
-  ],
-  'operations_team': [
-    'AI Insights', 'Profile'
-  ],
-  'user': [
-    'Profile'
-  ],
-};
+// All users can see all menu items
+const allMenuItems = [
+  'Dashboard', 'Inventory', 'Warehouses', 'Orders', 'Shipments', 'Vendor Orders', 'Vendor Proof', 'Deliveries', 'Reports', 'AI Insights', 'Profile'
+];
 
 const menuPurpose = {
   'Dashboard': 'Quick overview of KPIs and system status.',
@@ -194,19 +138,21 @@ const menuPurpose = {
   'Profile': 'Manage your account and preferences.'
 };
 
-// Helper: role access map for each route
+// Helper: role access map for each route - All routes accessible to all users
 const routeRoleMap = {
-  '/dashboard': ['admin','manager','executive'],
-  '/inventory': ['admin','manager','inventory_manager','storekeeper'],
-  '/warehouses': ['admin','manager','inventory_manager','storekeeper','logistics_manager','warehouse_admin'],
-  '/orders': ['admin','manager','sales_staff','order_manager'],
-  '/shipments': ['admin','manager','logistics_manager','warehouse_admin','shipping_team'],
-  '/vendor-orders': ['admin','manager','procurement_officer','purchase_dept'],
-  '/vendor-proof': ['admin','manager','procurement_officer','purchase_dept','compliance_team'],
-  '/deliveries': ['admin','manager','logistics_manager','warehouse_admin','delivery_manager','logistics_staff'],
-  '/reports': ['admin','manager','executive','analyst'],
-  '/ai': ['admin','manager','executive','analyst','data_analyst','operations_team'],
-  '/profile': ['*'], // All users
+  '/dashboard': ['*'],
+  '/inventory': ['*'],
+  '/warehouses': ['*'],
+  '/orders': ['*'],
+  '/shipments': ['*'],
+  '/vendor-orders': ['*'],
+  '/vendor-proof': ['*'],
+  '/deliveries': ['*'],
+  '/reports': ['*'],
+  '/ai': ['*'],
+  '/profile': ['*'],
+  '/users': ['*'],
+  '/settings': ['*'],
 };
 
 // Function to load chatbot widget conditionally
@@ -241,12 +187,8 @@ function ProtectedRoute({ element, path, profile }) {
     );
   }
   
-  const allowedRoles = routeRoleMap[path] || [];
-  if (allowedRoles.includes('*') || allowedRoles.includes(profile.role?.toLowerCase()) || ['admin','manager'].includes(profile.role?.toLowerCase())) {
-    return element;
-  }
-  // Redirect unauthorized users
-  return <Navigate to="/dashboard" replace />;
+  // All authenticated users can access all routes
+  return element;
 }
 
 function AppContent({ mode, toggleMode }) {
@@ -472,14 +414,8 @@ function AppContent({ mode, toggleMode }) {
         <Divider sx={{ bgcolor: 'rgba(255,255,255,0.12)', mb: 2 }} />
         <Box sx={{ overflow: 'auto', px: 1 }}>
           <List>
-            {/* Role-based menu filtering */}
-            {(navItems.filter(item => {
-              if (!profile?.role) return true; // Show all if role is not loaded yet
-              const allowed = roleMenuMap[profile.role?.toLowerCase()] || [];
-              // Admins/managers see all
-              if (['admin','manager'].includes(profile.role?.toLowerCase())) return true;
-              return allowed.includes(item.text);
-            })).map((item) => (
+            {/* Show all menu items for all users */}
+            {navItems.map((item) => (
               <ListItem key={item.text} disablePadding sx={{ justifyContent: sidebarOpen ? 'flex-start' : 'center' }}>
                 <Tooltip title={menuPurpose[item.text] || ''} placement="right" arrow>
                   <ListItemButton

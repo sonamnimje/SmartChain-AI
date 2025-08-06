@@ -40,14 +40,12 @@ function DashboardQuickActions({ profile }) {
         component={Link}
         to="/settings"
       />
-      {profile?.role?.toLowerCase() === 'admin' && (
-        <SpeedDialAction
-          icon={<AdminPanelSettingsIcon />}
-          tooltipTitle="Admin Dashboard"
-          component={Link}
-          to="/admin"
-        />
-      )}
+      <SpeedDialAction
+        icon={<AdminPanelSettingsIcon />}
+        tooltipTitle="User Management"
+        component={Link}
+        to="/users"
+      />
     </SpeedDial>
   );
 }
