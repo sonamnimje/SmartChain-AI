@@ -133,4 +133,4 @@ SmartChain AI is committed to transforming retail operations for a more efficien
 
 ---
 
-*Built with ❤️ for a smarter, greener tomorrow* 
+*Built with ❤️ for a smarter, greener tomorrow.* 
