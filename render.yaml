@@ -28,7 +28,7 @@ services:
     staticPublishPath: ./build
     envVars:
       - key: REACT_APP_API_URL
-        value: https://smartchain-ai-backend.onrender.com
+        value: https://smartchain-ai-backend-imvu.onrender.com
 
 databases:
   - name: smartchain-db

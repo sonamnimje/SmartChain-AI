@@ -50,7 +50,12 @@ function Signup() {
     onSubmit: async (values) => {
       setLoading(true);
       try {
-        const res = await api.post('/auth/signup', { email: values.email, password: values.password });
+        const res = await api.post('/auth/signup', { 
+          email: values.email, 
+          password: values.password,
+          username: values.username || values.email.split('@')[0], // Use email prefix as username if not provided
+          name: values.username || values.email.split('@')[0] // Use username as name
+        });
         enqueueSnackbar('Signup successful! Please log in.', { variant: 'success' });
         navigate('/dashboard');
       } catch (err) {
