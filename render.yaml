@@ -4,6 +4,7 @@ services:
     name: smartchain-ai-backend
     env: python
     plan: free
+    rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: chmod +x start.sh && ./start.sh
     envVars:
@@ -22,6 +23,7 @@ services:
   - type: web
     name: smartchain-ai-frontend
     env: static
+    rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: ./build
     envVars:
