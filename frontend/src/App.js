@@ -351,10 +351,8 @@ function AppContent({ mode, toggleMode }) {
 
   console.log('ALERTS STATE:', alerts);
 
-  const isLanding = location.pathname === '/';
-  const isFullscreenPage = ['/','/login','/signup','/forgot-password'].includes(location.pathname);
+  const isFullscreenPage = ['/login','/signup','/forgot-password'].includes(location.pathname);
   if (isFullscreenPage) {
-    if (location.pathname === '/') return <Landing />;
     if (location.pathname === '/login') return <Login />;
     if (location.pathname === '/signup') return <Signup />;
     if (location.pathname === '/forgot-password') return <ForgotPassword />;
@@ -498,7 +496,6 @@ function AppContent({ mode, toggleMode }) {
         <Toolbar />
         <Container maxWidth="lg">
           <Routes>
-            <Route path="/" element={<Landing />} />
             <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard profile={profile} />} path="/dashboard" profile={profile} />} />
             <Route path="/inventory" element={<ProtectedRoute element={<InventoryList />} path="/inventory" profile={profile} />} />
             <Route path="/inventory/add" element={<ProtectedRoute element={<ProductForm />} path="/inventory" profile={profile} />} />
@@ -547,6 +544,9 @@ function App() {
       <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
         <Router>
           <Routes>
+            {/* Landing page (no sidebar, no auth required) */}
+            <Route path="/" element={<Landing />} />
+            
             {/* Full screen routes (no sidebar) */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
