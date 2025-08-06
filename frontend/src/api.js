@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Get API URL from environment variable or use default
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_URL = process.env.REACT_APP_API_URL || 'https://smartchain-ai-backend-imvu.onrender.com/';
 
 const api = axios.create({
   baseURL: API_URL,
