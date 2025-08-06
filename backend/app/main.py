@@ -102,6 +102,37 @@ def seed_test_data(db: Session = Depends(get_db)):
 
     return {"message": "Test data seeded."}
 
+@app.post("/create-test-user")
+def create_test_user_endpoint(db: Session = Depends(get_db)):
+    from .crud import pwd_context
+    from .models import User
+    
+    # Check if test user already exists
+    existing_user = db.query(User).filter(User.email == "admin@smartchain.com").first()
+    if existing_user:
+        return {"message": "Test user already exists!", "email": "admin@smartchain.com", "password": "admin123"}
+    
+    # Create test user
+    hashed_password = pwd_context.hash("admin123")
+    test_user = User(
+        email="admin@smartchain.com",
+        hashed_password=hashed_password,
+        name="Admin User",
+        phone="1234567890",
+        role="admin",
+        username="admin"
+    )
+    
+    db.add(test_user)
+    db.commit()
+    db.refresh(test_user)
+    
+    return {
+        "message": "Test user created successfully!",
+        "email": "admin@smartchain.com",
+        "password": "admin123"
+    }
+
 # Routers (to be implemented)
 from .routers import auth, inventory, orders, warehouses, deliveries, ai, reports, settings, alerts
 app.include_router(auth.router)
