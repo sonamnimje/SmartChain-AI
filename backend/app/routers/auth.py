@@ -30,18 +30,42 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
 
 @router.post("/signup", response_model=schemas.Token)
 def signup(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    # Check if email already exists
     db_user = crud.get_user_by_email(db, user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
+    
+    # Check if username already exists (if username is provided)
+    if user.username:
+        existing_username = crud.get_user_by_username(db, user.username)
+        if existing_username:
+            raise HTTPException(status_code=400, detail="Username already taken")
+    
+    # Set default username if not provided
+    if not user.username:
+        user.username = user.email.split('@')[0]
+    
+    # Set default name if not provided
+    if not user.name:
+        user.name = user.username
+    
     new_user = crud.create_user(db, user)
     access_token = create_access_token(data={"sub": new_user.email})
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.post("/login", response_model=schemas.Token)
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    # Try to authenticate with email first
     user = crud.authenticate_user(db, form_data.username, form_data.password)
+    
+    # If not found by email, try by username
     if not user:
-        raise HTTPException(status_code=401, detail="Incorrect email or password")
+        user_by_username = crud.get_user_by_username(db, form_data.username)
+        if user_by_username and crud.pwd_context.verify(form_data.password, user_by_username.hashed_password):
+            user = user_by_username
+    
+    if not user:
+        raise HTTPException(status_code=401, detail="Incorrect email/username or password")
     access_token = create_access_token(data={"sub": user.email})
     return {"access_token": access_token, "token_type": "bearer"}
 

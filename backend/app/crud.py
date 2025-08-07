@@ -14,6 +14,7 @@ def create_user(db: Session, user: schemas.UserCreate):
         email=user.email, 
         hashed_password=hashed_password,
         name=user.name,
+        username=user.username,
         phone=user.phone,
         avatar=user.avatar,
         role=user.role if hasattr(user, 'role') and user.role else 'user'
@@ -30,6 +31,9 @@ def authenticate_user(db: Session, email: str, password: str):
     if not pwd_context.verify(password, user.hashed_password):
         return None
     return user
+
+def get_user_by_username(db: Session, username: str):
+    return db.query(models.User).filter(models.User.username == username).first()
 
 def create_password_reset_token(db: Session, email: str, token: str, expires_at: datetime):
     db_token = models.PasswordResetToken(

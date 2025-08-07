@@ -56,8 +56,14 @@ function Signup() {
           username: values.username || values.email.split('@')[0], // Use email prefix as username if not provided
           name: values.username || values.email.split('@')[0] // Use username as name
         });
-        enqueueSnackbar('Signup successful! Please log in.', { variant: 'success' });
-        navigate('/dashboard');
+        if (res.data && res.data.access_token) {
+          setAuthToken(res.data.access_token);
+          enqueueSnackbar('Signup successful! You are now logged in.', { variant: 'success' });
+          navigate('/dashboard');
+        } else {
+          enqueueSnackbar('Signup successful! Please log in.', { variant: 'success' });
+          navigate('/login');
+        }
       } catch (err) {
         enqueueSnackbar(
           err?.response?.data?.detail || 'Signup failed. Please try again.',
