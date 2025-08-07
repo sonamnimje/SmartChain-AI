@@ -1,59 +1,71 @@
 #!/usr/bin/env python3
+import sys
 import os
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+from app.database import SessionLocal, engine
+from app.models import Base, User
+from app.crud import pwd_context
 
 def check_database():
-    # Get database URL from environment variable or use default SQLite
-    DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./smartchain.db")
-    
-    print("=== SmartChain AI Database Information ===")
-    print(f"Database URL: {DATABASE_URL}")
-    
-    # Handle Render's PostgreSQL URL format
-    if DATABASE_URL.startswith("postgres://"):
-        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
-    
-    # Create engine
-    if "sqlite" in DATABASE_URL:
-        engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
-        print("Database Type: SQLite")
-    else:
-        engine = create_engine(DATABASE_URL)
-        print("Database Type: PostgreSQL")
-    
     try:
-        # Test connection
-        with engine.connect() as connection:
-            result = connection.execute(text("SELECT 1"))
-            print("Connection Status: ✅ Connected")
+        # Create tables if they don't exist
+        Base.metadata.create_all(bind=engine)
+        print("✅ Database tables created successfully")
+        
+        # Test database connection
+        db = SessionLocal()
+        try:
+            # Check if we can query the database
+            user_count = db.query(User).count()
+            print(f"✅ Database connection successful. Found {user_count} users.")
             
-            # Get database info
-            if "sqlite" in DATABASE_URL:
-                # SQLite specific info
-                result = connection.execute(text("PRAGMA database_list"))
-                db_info = result.fetchone()
-                print(f"Database File: {db_info[2] if db_info else 'smartchain.db'}")
-                
-                # Get table count
-                result = connection.execute(text("SELECT name FROM sqlite_master WHERE type='table'"))
-                tables = result.fetchall()
-                print(f"Number of Tables: {len(tables)}")
-                print("Tables:", [table[0] for table in tables])
+            # Check if admin user exists
+            admin_user = db.query(User).filter(User.email == "admin@smartchain.com").first()
+            if admin_user:
+                print("✅ Admin user exists:")
+                print(f"   Email: {admin_user.email}")
+                print(f"   Username: {admin_user.username}")
+                print(f"   Role: {admin_user.role}")
             else:
-                # PostgreSQL specific info
-                result = connection.execute(text("SELECT current_database()"))
-                db_name = result.fetchone()[0]
-                print(f"Database Name: {db_name}")
+                print("❌ Admin user not found. Creating...")
+                # Create admin user
+                hashed_password = pwd_context.hash("admin123")
+                admin_user = User(
+                    email="admin@smartchain.com",
+                    hashed_password=hashed_password,
+                    name="Admin User",
+                    phone="1234567890",
+                    role="admin",
+                    username="admin"
+                )
+                db.add(admin_user)
+                db.commit()
+                db.refresh(admin_user)
+                print("✅ Admin user created successfully!")
+                print(f"   Email: {admin_user.email}")
+                print(f"   Password: admin123")
+            
+            # List all users
+            all_users = db.query(User).all()
+            print(f"\n📋 All users in database ({len(all_users)} total):")
+            for user in all_users:
+                print(f"   - {user.email} (username: {user.username}, role: {user.role})")
                 
-                # Get table count
-                result = connection.execute(text("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'"))
-                tables = result.fetchall()
-                print(f"Number of Tables: {len(tables)}")
-                print("Tables:", [table[0] for table in tables])
-                
+        finally:
+            db.close()
+            
     except Exception as e:
-        print(f"Connection Status: ❌ Error - {e}")
+        print(f"❌ Database error: {e}")
+        return False
+    
+    return True
 
 if __name__ == "__main__":
-    check_database() 
+    print("🔍 Checking database status...")
+    success = check_database()
+    if success:
+        print("\n✅ Database check completed successfully!")
+    else:
+        print("\n❌ Database check failed!")
+        sys.exit(1) 
