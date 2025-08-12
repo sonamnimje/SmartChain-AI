@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+
 from sqlalchemy.orm import Session
 from datetime import datetime
 from .database import engine, SessionLocal, get_db
@@ -20,14 +21,11 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:3001", 
-        "https://smartchain-ai-frontend.onrender.com",
-        "https://smartchain-ai-frontend-imvu.onrender.com",
-        "https://smart-chain-ai-fkeg.vercel.app"
+        "https://smart-chain-ai.vercel.app",  # Your frontend URL
+        "http://localhost:3000",              # (Optional: for local development)
     ],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
@@ -105,7 +103,7 @@ def seed_test_data(db: Session = Depends(get_db)):
 
 @app.post("/create-test-user")
 def create_test_user_endpoint(db: Session = Depends(get_db)):
-    from .crud import pwd_context
+   
     from .models import User
     
     # Check if test user already exists
@@ -226,4 +224,4 @@ if __name__ == "__main__":
     # db.query(Inventory).delete()
     # db.query(Order).delete()
     # db.commit()
-    print("You can now restart the backend and place orders for all products.") 
+    print("You can now restart the backend and place orders for all products.")
