@@ -1,3 +1,4 @@
+# Live Link - https://smart-chain-ai.vercel.app/
 # 🤖 SmartChain AI – AI-Powered Retail Supply Chain Optimization
 
 SmartChain AI is a web-based platform that leverages advanced AI to optimize retail supply chains. It empowers businesses to improve inventory management, demand forecasting, and delivery tracking, all through a modern dashboard and a local Omnidimension-powered chatbot for actionable insights.
