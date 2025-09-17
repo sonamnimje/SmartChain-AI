@@ -33,7 +33,7 @@ app.add_middleware(
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to SmartChain AI API", "status": "healthy"}
+    return {"message": "Welcome to Smartchain AI Backend!"}
 
 @app.get("/health")
 def health_check():

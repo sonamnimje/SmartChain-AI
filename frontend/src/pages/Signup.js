@@ -41,6 +41,7 @@ function Signup() {
       email: '',
       password: '',
       confirm: '',
+      username: '',
     },
     validationSchema: Yup.object({
       email: Yup.string().email('Invalid email').required('Required'),
@@ -53,8 +54,8 @@ function Signup() {
         const res = await api.post('/auth/signup', { 
           email: values.email, 
           password: values.password,
-          username: values.username || values.email.split('@')[0], // Use email prefix as username if not provided
-          name: values.username || values.email.split('@')[0] // Use username as name
+          username: values.username || values.email.split('@')[0],
+          name: values.username || values.email.split('@')[0]
         });
         if (res.data && res.data.access_token) {
           setAuthToken(res.data.access_token);
@@ -140,7 +141,7 @@ function Signup() {
             label="Password"
             type={showPassword ? 'text' : 'password'}
             value={formik.values.password}
-            onChange={formik.handleChange}
+            onChange={(e) => { formik.handleChange(e); setPassword(e.target.value); }}
             error={formik.touched.password && Boolean(formik.errors.password)}
             helperText={formik.touched.password && formik.errors.password}
             autoComplete="new-password"

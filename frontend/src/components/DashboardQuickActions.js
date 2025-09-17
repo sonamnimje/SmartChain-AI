@@ -13,7 +13,12 @@ function DashboardQuickActions({ profile }) {
   return (
     <SpeedDial
       ariaLabel="Quick Actions"
-      sx={{ position: 'fixed', bottom: 32, right: 32, zIndex: 1201 }}
+      sx={{
+        position: 'fixed',
+        bottom: { xs: 88, sm: 104, md: 120 },
+        right: { xs: 16, sm: 24, md: 32 },
+        zIndex: 1201
+      }}
       icon={<SpeedDialIcon />}
     >
       <SpeedDialAction

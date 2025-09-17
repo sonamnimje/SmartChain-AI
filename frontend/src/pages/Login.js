@@ -26,18 +26,18 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const formik = useFormik({
     initialValues: {
-      email: '',
+      identifier: '',
       password: '',
     },
     validationSchema: Yup.object({
-      email: Yup.string().email('Invalid email').required('Required'),
+      identifier: Yup.string().required('Required'),
       password: Yup.string().required('Required'),
     }),
     onSubmit: async (values) => {
       setLoading(true);
       try {
         const formData = new URLSearchParams();
-        formData.append('username', values.email);
+        formData.append('username', values.identifier);
         formData.append('password', values.password);
         const res = await api.post('/auth/login', formData, {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
@@ -78,13 +78,13 @@ function Login() {
           <TextField
             fullWidth
             margin="normal"
-            id="email"
-            name="email"
+            id="identifier"
+            name="identifier"
             label="Username or Email"
-            value={formik.values.email}
+            value={formik.values.identifier}
             onChange={formik.handleChange}
-            error={formik.touched.email && Boolean(formik.errors.email)}
-            helperText={formik.touched.email && formik.errors.email ? <span style={{ fontWeight: 700 }}>{formik.errors.email}</span> : null}
+            error={formik.touched.identifier && Boolean(formik.errors.identifier)}
+            helperText={formik.touched.identifier && formik.errors.identifier ? <span style={{ fontWeight: 700 }}>{formik.errors.identifier}</span> : null}
             autoComplete="username"
             InputProps={{
               style: { color: '#fff', background: 'transparent', fontWeight: 700, boxShadow: 'none' },
